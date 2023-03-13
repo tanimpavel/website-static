@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tanim Pavel</title>
+    <link>https://tanimpavel.com/</link>
+    <description>Recent content on Tanim Pavel</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Jan 2023 10:40:03 -0500</lastBuildDate><atom:link href="https://tanimpavel.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hosting your own DNS over HTTPS server</title>
+      <link>https://tanimpavel.com/hosting-your-own-dns-over-https-server/</link>
+      <pubDate>Sun, 01 Jan 2023 10:40:03 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/hosting-your-own-dns-over-https-server/</guid>
+      <description>&lt;p&gt;DNS over HTTPS is a protocol that encrypts your DNS (the protocol that converts domain names to ip addresses) requests which can help to mitigate ISP spying and bypass basic censorship. While this protocol has its benefits it can also rely on using centralized servers run by large companies such as Google and Cloudflare which you may not trust completely. In this tutorial, I will show you how to set up your own DNS over HTTPS server.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>How to configure public key authentication in SSH</title>
+      <link>https://tanimpavel.com/how-to-configure-public-key-authentication-in-ssh/</link>
+      <pubDate>Wed, 21 Dec 2022 11:26:28 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/how-to-configure-public-key-authentication-in-ssh/</guid>
+      <description>&lt;p&gt;Public key authentication can be a fast and secure way in logging into an SSH server as opposed to using the traditional password-based login. Having a public key authentication setup can also be needed when setting up automated scripts that involve running commands on a remote server. In this tutorial, I will show you how to get started with public key authentication.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Setting up an adblocking DNS server</title>
+      <link>https://tanimpavel.com/setting-up-an-adblocking-dns-server/</link>
+      <pubDate>Mon, 19 Dec 2022 13:13:03 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/setting-up-an-adblocking-dns-server/</guid>
+      <description>&lt;p&gt;The modern internet is full of ads and trackers that can slow your devices down and put your privacy at risk. Traditional browser-based ad blockers such as AdBlock Plus can get the job done within your browser but non-browser-based apps and the rest of your network is unaffected. In this tutorial, I will show you how to install AdGuard Home a DNS-based adblocker on your home network.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Deploying a Flask application with Gunicorn</title>
+      <link>https://tanimpavel.com/deploying-a-flask-application-with-gunicorn/</link>
+      <pubDate>Sat, 17 Dec 2022 15:43:59 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/deploying-a-flask-application-with-gunicorn/</guid>
+      <description>&lt;p&gt;You have your fancy Flask application working but now you need to deploy it and you have no idea what to do. No worries I was in this same situation in my senior software development project. In this tutorial, I will show you how to deploy your Flask application on a Linux cloud server using Gunicorn.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Hosting a website with Caddy</title>
+      <link>https://tanimpavel.com/hosting-a-website-with-caddy/</link>
+      <pubDate>Fri, 16 Dec 2022 09:50:04 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/hosting-a-website-with-caddy/</guid>
+      <description>&lt;p&gt;Having a personal website can be a great way in putting yourself out there on the internet. In this tutorial, I will show you how to get a basic web server up and running with a valid HTTPS certificate.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://tanimpavel.com/about/</link>
+      <pubDate>Mon, 12 Dec 2022 12:51:06 -0500</pubDate>
+      
+      <guid>https://tanimpavel.com/about/</guid>
+      <description>Hello, my name is Tanim Pavel and this is my website where I document new material that I am learning about. I have a bachelor&amp;rsquo;s degree in Computer Science from the University of North Carolina at Charlotte.
+I am always seeking to learn new technologies and advances within the Information Technology field.
+This website is hosted using Caddy, a web server with automatic HTTPS running on a Linux cloud server.</description>
+    </item>
+    
+  </channel>
+</rss>

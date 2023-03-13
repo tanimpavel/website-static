@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>How to configure public key authentication in SSH // Tanim Pavel</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.108.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tanim Pavel" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.cc451822d9dafb236d57713fc2b42863d5aefa5d1d09ca8d9eb06008318f4001.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="How to configure public key authentication in SSH"/>
+<meta name="twitter:description" content="Public key authentication can be a fast and secure way in logging into an SSH server as opposed to using the traditional password-based login. Having a public key authentication setup can also be needed when setting up automated scripts that involve running commands on a remote server. In this tutorial, I will show you how to get started with public key authentication."/>
+
+    <meta property="og:title" content="How to configure public key authentication in SSH" />
+<meta property="og:description" content="Public key authentication can be a fast and secure way in logging into an SSH server as opposed to using the traditional password-based login. Having a public key authentication setup can also be needed when setting up automated scripts that involve running commands on a remote server. In this tutorial, I will show you how to get started with public key authentication." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tanimpavel.com/how-to-configure-public-key-authentication-in-ssh/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-21T11:26:28-05:00" />
+<meta property="article:modified_time" content="2022-12-21T11:26:28-05:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <div class='askella-default-logo'>Tanim Pavel</div>
+      
+      
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about">About</a>
+      </nav>
+      
+      <a href="mailto:tanimpavel7@gmail.com"><p>Email - tanimpavel7@gmail.com</p></a>
+      <a href="http://www.github.com/tanimpavel" target="_blank"><p>Github - github.com/tanimpavel</p></a>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">How to configure public key authentication in SSH</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 21, 2022
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          4 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>Public key authentication can be a fast and secure way in logging into an SSH server as opposed to using the traditional password-based login. Having a public key authentication setup can also be needed when setting up automated scripts that involve running commands on a remote server. In this tutorial, I will show you how to get started with public key authentication.</p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<ol>
+<li>Server running SSH</li>
+<li>SSH client on your local machine</li>
+</ol>
+<h2 id="getting-started">Getting Started</h2>
+<ol>
+<li>Generate an SSH keypair on the client</li>
+</ol>
+<pre tabindex="0"><code>ssh-keygen -t rsa
+</code></pre><p>You will be prompted to enter a filename and a passphrase. You can just press enter for a default file name on the first prompt and setting no passphrase on the second prompt (I recommend setting a passphrase).</p>
+<pre tabindex="0"><code>Generating public/private rsa key pair.
+Enter file in which to save the key (/home/test/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/test/.ssh/id_rsa
+Your public key has been saved in /home/test/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:33PtRZ5EaCRaOzzbPGuAWapGzv4d2+Zdx3C52ZoaZyQ test@test
+The key&#39;s randomart image is:
++---[RSA 3072]----+
+|           o .   |
+|          + + .  |
+|         . * o . |
+|          = B . .|
+|       .S+ oE+ooo|
+|      + .. ..o+B=|
+|       =  ..+o++O|
+|      o   . =B.++|
+|       ... o++o..|
++----[SHA256]-----+
+</code></pre><ol start="2">
+<li>Copy the public key to your remote server</li>
+</ol>
+<h3 id="method-1---use-ssh-copy-id">Method 1 - Use ssh-copy-id</h3>
+<pre tabindex="0"><code>ssh-copy-id -i .ssh/id_rsa.pub test@&#39;your server ip/domain&#39;
+</code></pre><p>The output should look something like this:</p>
+<pre tabindex="0"><code>/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: &#34;.ssh/id_rsa.pub&#34;
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+expr: warning: &#39;^ERROR: &#39;: using &#39;^&#39; as the first character
+of a basic regular expression is not portable; it is ignored
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+test@&#39;your server ip/domain&#39; password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   &#34;ssh &#39;test@&#39;your server ip/domain&#39;&#34;
+and check to make sure that only the key(s) you wanted were added.
+</code></pre><h3 id="method-2---manually-copy-the-public-key">Method 2 - Manually copy the public key</h3>
+<p>You will need to use this method if your local system does not have ssh-copy-id (For example you are using OpenSSH on Windows.)</p>
+<ol>
+<li>Copy the contents of your public key</li>
+</ol>
+<pre tabindex="0"><code>cat .ssh/id_rsa.pub
+</code></pre><p>Note you can replace <code>cat</code> with <code>notepad</code> in Windows to display the public key</p>
+<p>The output should look something like this</p>
+<pre tabindex="0"><code>ssh-rsa AAAAsdfgsdfgsdfgsdfgsfgsdfgsdgsd= `your username`@`your computer`
+</code></pre><p>Note the actual public key will be longer this is just an example to show you what it would look like</p>
+<ol start="2">
+<li>
+<p>SSH into your server <code>ssh user@'your server ip/domain'</code></p>
+</li>
+<li>
+<p>Use nano or your favorite command line text editor to open the authorized keys file</p>
+</li>
+</ol>
+<pre tabindex="0"><code>nano .ssh/authorized_keys
+</code></pre><ol start="4">
+<li>Paste what you have copied before at the end of the file (you may or may not have existing content in that file)</li>
+</ol>
+<h2 id="testing-public-key-authentication">Testing public key authentication</h2>
+<p>With your keypair generated and your public key successfully copied to your remote server, you will now want to test it to see if everything went smoothly.</p>
+<p>You will just need to SSH as normal</p>
+<pre tabindex="0"><code>ssh &#39;your user&#39;@&#39;your server ip/domain&#39;
+</code></pre><p>If you have completed the previous steps you will be prompted for your passphrase and after entering it you should be automatically logged in.</p>
+<h2 id="optional-disabling-password-based-authentication">(Optional) Disabling password-based authentication</h2>
+<p>With public key authentication configured you may want to disable password-based authentication for better security.</p>
+<p>To do this open <code>/etc/ssh/sshd_config</code> in nano or your favorite command line text editor.
+Find the line <code>PasswordAuthentication yes</code> and change it to <code>PasswordAuthentication no</code>.</p>
+<p>Once you have done that simply run <code>sudo service sshd restart</code></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Congratulations you have successfully configured public key authentication on your SSH server. I hope this tutorial has helped you.
+If you have disabled password-based authentication I highly recommend keeping a backup of your keypair and having an alternate way of accessing your server such as through a KVM (physical or virtual).</p>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+    <br>
+    <footer class="app-footer"><p><span>&copy;</span> 
+    <script type="text/javascript">
+      document.write(new Date().getFullYear());
+    </script> - Tanim Pavel</p></footer>
+  </body>
+</html>

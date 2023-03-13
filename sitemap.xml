@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://tanimpavel.com/hosting-your-own-dns-over-https-server/</loc>
+    <lastmod>2023-01-01T10:40:03-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/posts/</loc>
+    <lastmod>2023-01-01T10:40:03-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/</loc>
+    <lastmod>2023-01-01T10:40:03-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/how-to-configure-public-key-authentication-in-ssh/</loc>
+    <lastmod>2022-12-21T11:26:28-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/setting-up-an-adblocking-dns-server/</loc>
+    <lastmod>2022-12-19T13:13:03-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/deploying-a-flask-application-with-gunicorn/</loc>
+    <lastmod>2022-12-17T15:43:59-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/hosting-a-website-with-caddy/</loc>
+    <lastmod>2022-12-16T09:50:04-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/about/</loc>
+    <lastmod>2022-12-12T12:51:06-05:00</lastmod>
+  </url><url>
+    <loc>https://tanimpavel.com/categories/</loc>
+  </url><url>
+    <loc>https://tanimpavel.com/tags/</loc>
+  </url>
+</urlset>

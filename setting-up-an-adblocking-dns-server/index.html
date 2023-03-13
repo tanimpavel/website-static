@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Setting up an adblocking DNS server // Tanim Pavel</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.108.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tanim Pavel" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.cc451822d9dafb236d57713fc2b42863d5aefa5d1d09ca8d9eb06008318f4001.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Setting up an adblocking DNS server"/>
+<meta name="twitter:description" content="The modern internet is full of ads and trackers that can slow your devices down and put your privacy at risk. Traditional browser-based ad blockers such as AdBlock Plus can get the job done within your browser but non-browser-based apps and the rest of your network is unaffected. In this tutorial, I will show you how to install AdGuard Home a DNS-based adblocker on your home network."/>
+
+    <meta property="og:title" content="Setting up an adblocking DNS server" />
+<meta property="og:description" content="The modern internet is full of ads and trackers that can slow your devices down and put your privacy at risk. Traditional browser-based ad blockers such as AdBlock Plus can get the job done within your browser but non-browser-based apps and the rest of your network is unaffected. In this tutorial, I will show you how to install AdGuard Home a DNS-based adblocker on your home network." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tanimpavel.com/setting-up-an-adblocking-dns-server/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-19T13:13:03-05:00" />
+<meta property="article:modified_time" content="2022-12-19T13:13:03-05:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <div class='askella-default-logo'>Tanim Pavel</div>
+      
+      
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about">About</a>
+      </nav>
+      
+      <a href="mailto:tanimpavel7@gmail.com"><p>Email - tanimpavel7@gmail.com</p></a>
+      <a href="http://www.github.com/tanimpavel" target="_blank"><p>Github - github.com/tanimpavel</p></a>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Setting up an adblocking DNS server</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 19, 2022
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>The modern internet is full of ads and trackers that can slow your devices down and put your privacy at risk. Traditional browser-based ad blockers such as AdBlock Plus can get the job done within your browser but non-browser-based apps and the rest of your network is unaffected. In this tutorial, I will show you how to install AdGuard Home a DNS-based adblocker on your home network.</p>
+<h2 id="what-is-dns">What is DNS?</h2>
+<p>Before starting it is important to understand what DNS is and how it plays a role in adblocking. DNS is the protocol used to convert a domain name like <code>example.com</code> to an IP address <code>192.168.1.1</code>.</p>
+<p>An adblocking DNS server expands on this concept by utilizing domain blocklists of common ad-tracking domains.</p>
+<p>For example, let&rsquo;s say <code>adtracker.net</code> normally resolves to <code>10.20.37.5</code> on a standard DNS server. An adblocking DNS server will replace that IP address either with <code>0.0.0.0</code> an invalid IP address or an NXDOMAIN response which indicates that the domain does not exist.</p>
+<h2 id="pre-requisite">Pre-requisite</h2>
+<p>All you need is a machine running Linux (I will be using Ubuntu 22.04 in this tutorial). The machine can be something like a Raspberry PI, an old desktop your not using, or a virtual machine running on a hypervisor like VirtualBox.</p>
+<h2 id="setting-up-a-static-ip-address">Setting up a static IP address</h2>
+<p>Before getting started with setting up AdGuard Home we will first want to ensure our machine has a static IP address in our network. The easiest way to accomplish this is by setting up a DHCP reservation in your router.</p>
+<p>The way to accomplish this differs from router to router. For example, using an ASUS router you would go to the admin page by going to <code>http://192.168.1.1</code> in your web browser. From there you would click on LAN on the left-hand side then click on the DHCP server tab.</p>
+<p><img src="/images/asus-dhcp.png" alt="dhcp reservations on an asus router"></p>
+<p>Once on that page, you want to give your Linux machine a static IP address by selecting its MAC address (you can use the <code>ip a</code> command to find out) and putting a memorable IP address. In the network above something like <code>192.168.1.100</code> would be a sensible option but this is up to you.</p>
+<p>When you do set up a static IP address from your router you will want to reboot your Linux machine. You can use <code>ip a</code> to check if everything is working correctly.</p>
+<p>Unfortunately, I cannot give specific instructions for every router so you will have to research this issue on your own. I suggest searching for <code>DHCP reservation 'your router model'</code> in your favorite search engine to get started.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>To get started setting up AdGuard Home follow the steps below.</p>
+<ol>
+<li>Go the AdGuard Home <a style="text-decoration:underline" href="https://github.com/AdguardTeam/AdGuardHome/releases/" target="_blank">releases</a> page on GitHub</li>
+</ol>
+<p><img src="/images/adguard-releases.png" alt="two adguard releases on github"></p>
+<p>There will be many versions of AdGuard Home in the list. You will want to scroll down to the Linux versions. From there you will want to right-click and copy the link with your specific CPU architecture amd64 (for standard PCs or VMs), arm64 (64-bit Raspberry PIs or other arm single board computers), or armv7 (32bit Raspberry PIs or other arm single board computers).</p>
+<p>You may need to click the assets drop-down arrow and/or click the show all assets link to view the full list.</p>
+<p><img src="/images/github-showall.png" alt="github show all assets link"></p>
+<p><img src="/images/github-assets-arrow.png" alt="github assets drop-down arrow"></p>
+<ol start="2">
+<li>Download AdGuard Home using wget</li>
+</ol>
+<pre tabindex="0"><code>wget https://github.com/AdguardTeam/AdGuardHome/releases/download/v0.107.21/AdGuardHome_linux_amd64.tar.gz
+</code></pre><p>Note replace the link with the one you copied earlier. Should be in a similar format.</p>
+<ol start="3">
+<li>Extract the tar archive</li>
+</ol>
+<pre tabindex="0"><code>tar xzf &#39;file you just downloaded&#39;.tar.gz
+</code></pre><ol start="4">
+<li>Navigate to the AdGuard Home folder</li>
+</ol>
+<pre tabindex="0"><code>cd AdGuardHome
+</code></pre><h2 id="setting-up-adguard-home">Setting up AdGuard Home</h2>
+<p>Now that you have downloaded AdGuard Home to our system it is time to run it and start our initial configuration.</p>
+<p>The way to do this is to run the application directly: <code>sudo ./AdGuardHome</code>.</p>
+<p>From there open up a web browser and go to <code>http://&quot;SERVER IP&quot;:3000</code>.</p>
+<p>You should be greeted with a screen like so.</p>
+<p><img src="/images/adguard-gettingstarted.png" alt="intital setup screen for adguard home"></p>
+<p>In the next screen of the setup process, you will want for AdGuard Home to either listen on all interfaces or listen on the interface with your current network address. In some Linux distributions due to the presence of systemd-resolved you will have to select a specific interface for the actual DNS server.</p>
+<p><img src="/images/adguard-interfaces.png" alt="setup screen for selecting ports"></p>
+<p>After that, you will have to set up a username and password.</p>
+<p><img src="/images/adguard-password.png" alt="setup screen for username and password"></p>
+<p>Once that is done you will have completed the initial AdGuard Home setup. From there you will be prompted to login and after doing so you will be presented with the main dashboard.</p>
+<p><img src="/images/adguard-dashboard.png" alt="main dashboard for adguard home"></p>
+<p>Now that you have successfully set up AdGuard Home you will want to close your browser and go back to the terminal where you started AdGuard Home. Use CTRL+C to exit the process.</p>
+<p>Run the following command to install AdGuard Home as a service. This will run AdGuard Home in the background and will automatically startup the main process when your system boots up.</p>
+<pre tabindex="0"><code>sudo ./AdGuardHome -s install
+</code></pre><h2 id="configuring-your-network-to-use-adguard-home">Configuring your network to use AdGuard Home</h2>
+<p>With AdGuard Home up and running you will now want to configure your router to use your custom DNS server. Once again this process will differ from router to router.</p>
+<p>In an ASUS router, you will want to go back to the admin page where you have set up the static IP address. From there you will want to put in your custom DNS IP in the <code>DNS Server 1</code> box. In addition, you will want to set the option <code>Advertise router's IP in addition to user-specified DNS</code> to no.</p>
+<p><img src="/images/asus-dns.png" alt="dns settings on asus router"></p>
+<p>If your router allows you to put more than one DNS server just leave the other boxes blank.</p>
+<p>I also cannot give specific instructions for every router here so I suggest searching <code>changing DNS server 'your router model'</code> to get started.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Congratulations you have successfully set up an adblocking DNS server on your local network. I have not even begun to scratch the surface of what AdGuard Home can do. I suggest going through the interface and trying out all of the different settings to see what you can accomplish with AdGuard Home.</p>
+<p>Some features include:</p>
+<ul>
+<li>Parental Controls</li>
+<li>Custom Block lists</li>
+<li>Custom blocking of certain services</li>
+<li>And more!</li>
+</ul>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+    <br>
+    <footer class="app-footer"><p><span>&copy;</span> 
+    <script type="text/javascript">
+      document.write(new Date().getFullYear());
+    </script> - Tanim Pavel</p></footer>
+  </body>
+</html>

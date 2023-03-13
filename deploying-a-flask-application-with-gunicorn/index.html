@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Deploying a Flask application with Gunicorn // Tanim Pavel</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta charset="utf-8" />
+    <meta name="generator" content="Hugo 0.108.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Tanim Pavel" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="/css/main.min.cc451822d9dafb236d57713fc2b42863d5aefa5d1d09ca8d9eb06008318f4001.css" />
+
+    
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Deploying a Flask application with Gunicorn"/>
+<meta name="twitter:description" content="You have your fancy Flask application working but now you need to deploy it and you have no idea what to do. No worries I was in this same situation in my senior software development project. In this tutorial, I will show you how to deploy your Flask application on a Linux cloud server using Gunicorn."/>
+
+    <meta property="og:title" content="Deploying a Flask application with Gunicorn" />
+<meta property="og:description" content="You have your fancy Flask application working but now you need to deploy it and you have no idea what to do. No worries I was in this same situation in my senior software development project. In this tutorial, I will show you how to deploy your Flask application on a Linux cloud server using Gunicorn." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tanimpavel.com/deploying-a-flask-application-with-gunicorn/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-12-17T15:43:59-05:00" />
+<meta property="article:modified_time" content="2022-12-17T15:43:59-05:00" />
+
+
+  </head>
+  <body>
+    <header class="app-header">
+      <div class='askella-default-logo'>Tanim Pavel</div>
+      
+      
+      <nav class="app-header-menu">
+          <a class="app-header-menu-item" href="/">Home</a>
+             - 
+          
+          <a class="app-header-menu-item" href="/about">About</a>
+      </nav>
+      
+      <a href="mailto:tanimpavel7@gmail.com"><p>Email - tanimpavel7@gmail.com</p></a>
+      <a href="http://www.github.com/tanimpavel" target="_blank"><p>Github - github.com/tanimpavel</p></a>
+    </header>
+    <main class="app-container">
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class ="post-title">Deploying a Flask application with Gunicorn</h1>
+      <div class="post-meta">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar">
+  <title>calendar</title>
+  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+          Dec 17, 2022
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock">
+  <title>clock</title>
+  <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+          5 min read
+        </div>
+      </div>
+    </header>
+    <div class="post-content">
+      <p>You have your fancy Flask application working but now you need to deploy it and you have no idea what to do. No worries I was in this same situation in my senior software development project. In this tutorial, I will show you how to deploy your Flask application on a Linux cloud server using Gunicorn.</p>
+<h2 id="pre-requisites">Pre-requisites</h2>
+<ol>
+<li>Cloud Server with SSH access running Ubuntu 22.04 or newer (you can use services such as DigitalOcean, Linode, etc.)</li>
+<li>Flask application to deploy</li>
+</ol>
+<h2 id="getting-started">Getting Started</h2>
+<ol>
+<li>Update repositories and install Python</li>
+</ol>
+<pre tabindex="0"><code>sudo apt update
+sudo apt install python3-dev python3-pip python3-venv
+</code></pre><ol start="2">
+<li>Create a directory for your Flask project</li>
+</ol>
+<pre tabindex="0"><code>mkdir ~/project
+</code></pre><p>Note you can replace &ldquo;project&rdquo; with whatever name you want</p>
+<ol start="3">
+<li>Create a virtual environment to store Flask and other Python dependencies</li>
+</ol>
+<pre tabindex="0"><code>cd ~/project
+python3 -m venv projectenv
+</code></pre><ol start="4">
+<li>Activate the virtual environment</li>
+</ol>
+<pre tabindex="0"><code>source projectenv/bin/activate
+</code></pre><p>Once you have activated your virtual environment your terminal prompt should look something like this:</p>
+<pre tabindex="0"><code>(projectenv) ubuntu@flask-test:~/project$
+</code></pre><p>Your environment name should be in parentheses at the start of your terminal prompt. This indicates that you are inside your virtual environment.</p>
+<h2 id="setting-up-a-flask-application">Setting up a Flask application</h2>
+<p>While still in your virtual environment run the following commands to install all of your pip dependencies.</p>
+<pre tabindex="0"><code>pip install wheel
+pip install gunicorn flask
+pip install &#34;any other dependencies your specific application needs&#34;
+</code></pre><p>Once you have all of your pip dependencies installed you will want to transfer your project files to your server.</p>
+<p>If you are using GitHub to store your application you can simply run <code>git clone &quot;your github url here&quot;</code>.</p>
+<p>Otherwise, you will need to use SFTP to transfer your project files to your server. This can be accomplished either using <a style="text-decoration:underline" href="http://winscp.net" target="_blank">WinScp</a> for Windows or <a style="text-decoration:underline" href="http://cyberduck.io" target="_blank">Cyberduck</a> for macOS.</p>
+<p>In this tutorial, I will just be using a basic hello world application.</p>
+<pre tabindex="0"><code>from flask import Flask
+app = Flask(__name__)
+
+@app.route(&#34;/&#34;)
+def hello():
+    return &#34;&lt;h1&gt;Hello World&lt;/h1&gt;&#34;
+
+if __name__ == &#34;__main__&#34;:
+    app.run(host=&#39;0.0.0.0&#39;)
+</code></pre><p>With your application uploaded to the server, you will first want to test it to make sure everything is working correctly.
+You can run it using <code>python &quot;yourappname&quot;.py</code>. Once you have done that you can open a web browser and type in your server ip with the corresponding port such as <code>10.70.30.68:5000</code>.</p>
+<p><img src="/images/flask-helloworld.png" alt="flask hello world running in firefox"></p>
+<p>You can use CTRL + C to exit the app.</p>
+<h2 id="setting-up-gunicorn">Setting up Gunicorn</h2>
+<p>With your Flask application working it is now time to deploy it on an actual application server instead of relying on the built-in development server that Flask uses.</p>
+<ol>
+<li>Create a new file to serve as your application&rsquo;s entry point</li>
+</ol>
+<pre tabindex="0"><code>touch wsgi.py
+</code></pre><ol start="2">
+<li>Insert the following code in the newly created file using nano or your preferred text editor</li>
+</ol>
+<pre tabindex="0"><code>from hello import app
+
+if __name__ == &#34;__main__&#34;:
+    app.run()
+</code></pre><p>Replace hello with the name of your app</p>
+<ol start="3">
+<li>Test Gunicorn by running the following command</li>
+</ol>
+<pre tabindex="0"><code>gunicorn --bind 0.0.0.0:5000 wsgi:app
+</code></pre><p>The terminal output should look something like this if everything is working</p>
+<pre tabindex="0"><code>[2022-12-18 18:07:22 +0000] [3591] [INFO] Starting gunicorn 20.1.0
+[2022-12-18 18:07:22 +0000] [3591] [INFO] Listening at: http://0.0.0.0:5000 (3591)
+[2022-12-18 18:07:22 +0000] [3591] [INFO] Using worker: sync
+[2022-12-18 18:07:22 +0000] [3592] [INFO] Booting worker with pid: 3592
+</code></pre><p>You can use CTRL + C to exit the app.</p>
+<ol start="4">
+<li>Deactivate the virtual environment</li>
+</ol>
+<pre tabindex="0"><code>deactivate
+</code></pre><ol start="5">
+<li>Create a new systemd service for your application</li>
+</ol>
+<pre tabindex="0"><code>sudo nano /etc/systemd/system/hello.service
+
+[Unit]
+Description=Gunicorn application server
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/project
+Environment=&#34;PATH=/home/ubuntu/project/projectenv/bin&#34;
+ExecStart=/home/ubuntu/project/projectenv/bin/gunicorn --workers 3 --bind 127.0.0.1:5000 -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Note adjust the paths and username to fit your specific needs.
+Depending on how many CPU cores your server has you can adjust the workers amount.</p>
+<ol start="6">
+<li>Enable and start your service</li>
+</ol>
+<pre tabindex="0"><code>sudo systemctl enable hello
+sudo service hello start
+sudo service hello status
+</code></pre><p>The output of the last command should look something like this.</p>
+<pre tabindex="0"><code> hello.service - Gunicorn application server
+     Loaded: loaded (/etc/systemd/system/hello.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sun 2022-12-18 18:17:44 UTC; 42s ago
+   Main PID: 3668 (gunicorn)
+      Tasks: 4 (limit: 4569)
+     Memory: 55.4M
+        CPU: 371ms
+     CGroup: /system.slice/hello.service
+             ├─3668 /home/ubuntu/project/projectenv/bin/python3 /home/ubuntu/project/projectenv/bin/g&gt;
+             ├─3669 /home/ubuntu/project/projectenv/bin/python3 /home/ubuntu/project/projectenv/bin/g&gt;
+             ├─3670 /home/ubuntu/project/projectenv/bin/python3 /home/ubuntu/project/projectenv/bin/g&gt;
+             └─3671 /home/ubuntu/project/projectenv/bin/python3 /home/ubuntu/project/projectenv/bin/g&gt;
+
+Dec 18 18:17:44 flask-test systemd[1]: Started Gunicorn application server.
+Dec 18 18:17:44 flask-test gunicorn[3668]: [2022-12-18 18:17:44 +0000] [3668] [INFO] Starting gunicor&gt;
+Dec 18 18:17:44 flask-test gunicorn[3668]: [2022-12-18 18:17:44 +0000] [3668] [INFO] Listening at: un&gt;
+Dec 18 18:17:44 flask-test gunicorn[3668]: [2022-12-18 18:17:44 +0000] [3668] [INFO] Using worker: sy&gt;
+Dec 18 18:17:44 flask-test gunicorn[3669]: [2022-12-18 18:17:44 +0000] [3669] [INFO] Booting worker w&gt;
+Dec 18 18:17:44 flask-test gunicorn[3670]: [2022-12-18 18:17:44 +0000] [3670] [INFO] Booting worker w&gt;
+Dec 18 18:17:44 flask-test gunicorn[3671]: [2022-12-18 18:17:44 +0000] [3671] [INFO] Booting worker w&gt;
+</code></pre><h2 id="using-caddy-to-route-requests">Using Caddy to route requests</h2>
+<p>With your application successfully up and running using Gunicorn, you will now want to install a web server to route requests to your application.</p>
+<p>I recommenced using Caddy. I have a basic tutorial linked <a style="text-decoration:underline" href="/hosting-a-website-with-caddy" target="_blank">here</a>.</p>
+<p>Edit your CaddyFile with the reverse proxy directive it should look something like this.</p>
+<pre tabindex="0"><code>:80 {
+        reverse_proxy 127.0.0.1:5000
+}
+</code></pre><p>Note <code>:80</code> can be replaced with your domain name for automatic HTTPS support</p>
+<p>At this point, you should be able to type in the domain name or ip address of your server directly into your web browser without a port and be able to visit your application.</p>
+<p><img src="/images/flask-caddy.png" alt="flask hello world running in firefox"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Congratulations your Flask application is now up and running on your server. I hope this tutorial has helped you.</p>
+    </div>
+    <div class="post-footer">
+      
+    </div>
+  </article>
+
+    </main>
+    <br>
+    <footer class="app-footer"><p><span>&copy;</span> 
+    <script type="text/javascript">
+      document.write(new Date().getFullYear());
+    </script> - Tanim Pavel</p></footer>
+  </body>
+</html>
